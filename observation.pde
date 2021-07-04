@@ -15,6 +15,7 @@ float opacity = 0;
 
 void setup() {
   size(360, 640);
+  frameRate(30);  
 
   //for(int i=0; i < planteCount; i++){
   //  illustrations[i] = loadImage("_" + i + "illustration.png");
@@ -34,15 +35,16 @@ void draw() {
   Client c = s.available();
   if (c != null) {
     String input = c.readString();
+    int clampedInput = constrain(int(input), 0, 100);
     println(input);
     
-    opacity = map(int(input), 0, 1023, 0,1);
+    opacity = map(clampedInput, 0, 100, 0,1);
   }
 
   tint(255);
   image(plante_illus, 0, 0);
 
-  tint(255, opacity * 255);
+  tint(255, (1 - opacity) * 255);
   image(plante_descr, 0, 0);
 
   text(opacity, 10, 10);
