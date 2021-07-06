@@ -26,6 +26,7 @@ GPIO_ECHO = 24
 GPIO.setup(GPIO_TRIGGER, GPIO.OUT)
 GPIO.setup(GPIO_ECHO, GPIO.IN)
 
+sensorFreq = 0.25
 
 def getSensorDistance():
     # set Trigger to HIGH
@@ -62,7 +63,7 @@ if __name__ == '__main__':
     try:
         while True:
             distance = getSensorDistance()
-            print ("=|| Distance = %.1f cm" % distance)
+            #print ("=|| Distance = %.1f cm" % distance)
 
             #--- SEND
             #s.send("test\n".encode());
@@ -70,7 +71,7 @@ if __name__ == '__main__':
             #data = (str(data)).encode()ç
             
             s.send(str(distance).encode())
-            time.sleep(0.5)
+            time.sleep(sensorFreq)
  
         # Reset by pressing CTRL + C
     except KeyboardInterrupt:

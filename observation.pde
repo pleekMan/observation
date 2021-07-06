@@ -17,7 +17,7 @@ float opacity = 0;
 boolean illustrationMode = true;
 float fadeVel = 0.02;
 
-int threshold = 50;
+int threshold = 99; // (99 cm APROX)
 
 void setup() {
   size(360, 640);
@@ -31,7 +31,7 @@ void setup() {
   s = new Server(this, 12000);
 
   timer = new Timer();
-  timer.setDurationInSeconds(4);
+  timer.setDurationInSeconds(5);
 
   loadPlante(0);
 }
@@ -87,7 +87,7 @@ int getSensorData() {
   if (c != null) {
     String input = c.readString();
     int clampedInput = constrain(int(input), 0, 100);
-    println(input);
+    //println(input);
     return clampedInput;
   } else {
     return 9999; // EXTREMELY HIGH NUMBER. WAY OUT OF THE SENSOR THRESHOLD
