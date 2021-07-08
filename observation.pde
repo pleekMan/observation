@@ -5,19 +5,22 @@ Server s;
 PImage plante_illus;
 PImage plante_descr;
 
-Timer timer;
+Timer timer_description;
+Timer timer_newPlant;
+boolean isChangingPlant = false;
+
 //PImage[] illustrations;
 //PImage[] descriptions;
 
 int planteCount = 3;
 int enPlante = 0;
 
-float opacity = 0;
+float opacity = 1;
 
 boolean illustrationMode = true;
 float fadeVel = 0.02;
 
-int threshold = 99; // (99 cm APROX)
+int threshold = 50; // (99 cm APROX)
 
 void setup() {
   size(360, 640);
@@ -30,8 +33,10 @@ void setup() {
 
   s = new Server(this, 12000);
 
-  timer = new Timer();
-  timer.setDurationInSeconds(5);
+  timer_description = new Timer();
+  timer_description.setDurationInSeconds(2); // 5
+  timer_newPlant = new Timer();
+  timer_newPlant.setDurationInSeconds(8);
 
   loadPlante(0);
 }
@@ -42,33 +47,59 @@ void draw() {
 
   // CHECK IF GOT SOMETHNG FROM PYTHON CLIENT
 
-  int sensorData = getSensorData();
-  //int sensorData = floor(map(mouseY, height, 0, 100, 0)); // SIMULATED WITH MOUSE
+  //int sensorData = getSensorData();
+  int sensorData = floor(map(mouseY, height, 0, 100, 0)); // SIMULATED WITH MOUSE
 
-  //opacity = map(sensorData, 0, 100, 0, 1);
-  
-  // DECLENCHER LE FADING IF USER PASSES LE SEUIL
-  if (sensorData < threshold && illustrationMode) {
-    illustrationMode = false;
-    timer.start();
-    //println("STARTED TIMER");
-  }
+  if (!isChangingPlant) {
 
-  // DIRECTION OF FADING
-  if (!illustrationMode) {
-    opacity += fadeVel;
+    // DECLENCHER LE FADING IF USER PASSES LE SEUIL
+    if (sensorData < threshold && illustrationMode) {
+      illustrationMode = false;
+      timer_description.start();
+      //println("TIMER DESCRIPTION : STARTED");
+    }
+
+    // DIRECTION OF FADING
+    if (!illustrationMode) {
+      opacity += fadeVel;
+    } else {
+      opacity -= fadeVel;
+    }
+
+    // TOUJOURS RESTRAINT
+    opacity  = constrain(opacity, 0, 1);
+
+
+    if (timer_description.isFinished()) {
+
+      if (!illustrationMode) {
+        timer_newPlant.start();
+        //println("TIMER DESCRIPTION : END");
+        //println("TIMER NEW PLANT : STARTED");
+      }
+
+      illustrationMode = true;
+    }
+
+
+    if (timer_newPlant.isFinished()) {
+      isChangingPlant = true;
+      loadNextPlantAsTransition();
+      //println("PLANT TRANSITION : STARTED");
+    }
   } else {
-    opacity -= fadeVel;
+
+    opacity += fadeVel;
+
+    if (opacity >= 1.0) {
+      loadNextPlante();
+      opacity = 0;
+      isChangingPlant = false;
+      illustrationMode = true;
+      timer_newPlant.start();
+      //println("PLANT TRANSITION : FINISHED");
+    }
   }
-
-  // TOUJOURS RESTRAINT
-  opacity  = constrain(opacity, 0, 1);
-
-
-  if (timer.isFinished()) {
-    illustrationMode = true;
-  }
-
 
 
   tint(255);
@@ -112,4 +143,11 @@ void loadNextPlante() {
 void loadPlante(int index) {
   plante_illus = loadImage("plantes/_" + index + "_illustration.png");
   plante_descr = loadImage("plantes/_" + index + "_description.png");
+}
+
+void loadNextPlantAsTransition() {
+  int nextPlante = enPlante + 1 < planteCount ? enPlante + 1 : 0;
+  // TEMPORARILY LOADING NEXT PLANT IMAGE ON plante_description PImage
+  plante_descr = loadImage("plantes/_" + nextPlante + "_illustration.png");
+  opacity = 0;
 }
