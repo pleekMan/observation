@@ -1,5 +1,6 @@
 import processing.net.*;
 
+
 Server s;
 
 PImage plante_illus;
@@ -23,8 +24,10 @@ float fadeVel = 0.02;
 int threshold = 50; // (99 cm APROX)
 
 void setup() {
-  size(360, 640);
+  size(1024, 600);
   frameRate(30);  
+  
+  imageMode(CENTER);
 
   //for(int i=0; i < planteCount; i++){
   //  illustrations[i] = loadImage("_" + i + "illustration.png");
@@ -101,16 +104,33 @@ void draw() {
     }
   }
 
+  drawPlante();
+  
+  text(nf(frameRate,0,2),10,10);
+  
+}
 
+void drawPlante(){
+ 
+  
+  pushMatrix();
+  translate(displayWidth * 0.5, displayHeight * 0.5);
+  rotate(HALF_PI);
+  
   tint(255);
-  image(plante_illus, 0, 0);
+  image(plante_illus, 0, 0, height * 0.9, width * 0.9);
+  //image(plante_illus, 0, 0, displayHeight, displayWidth);
+
 
   tint(255, opacity * 255);
-  image(plante_descr, 0, 0);
+  image(plante_descr, 0, 0, height * 0.9, width * 0.9);
+  //image(plante_descr, 0, 0,  displayHeight, displayWidth);
 
   fill(255, 0, 0);
   //text(opacity, 10, 10);
   //text(sensorData, 100, 10);
+  
+  popMatrix();
 }
 
 int getSensorData() {
